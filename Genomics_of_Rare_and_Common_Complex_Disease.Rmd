@@ -1,0 +1,587 @@
+---
+title: "Genomics of Rare and Common Complex Disease"
+author: "sho"
+date: '2020 8 25 '
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+0. Objectives
+1. Introduction
+2. Rare Genetic Disorders and Common Complex Diseases
+  2-1. Single Nucleotide Variant (SNV)
+  2-2. Haploltype
+  2-3. Linkage Disequilibrium (LD)
+  2-4. Tag SNP
+  2-5. Hardy-Weinberg Equilibrium (HWE)
+3. New Paradigms in Gene Research
+4. Single Nucleotide Variant Association Test and its Statistical Genetic Models
+  4-1. Fisher's Exact Test
+  4-2. Chi-squared test
+  4-3. Cochran-Armitage Trend Test (CATT)
+  4-4. Regression Analysis
+  4-5. Hardy-Weinberg Equilibrium (HWE) Test
+  5-6. Manhattan Graph
+  
+# 0. Objectives
+
+We're gonna have an understanding of five main value-chain of genomics industry: sampling, sequencing, data analysis, data interpretation, and clinical application. Based on this knowledge we're going to have a better understanding of the current genomics industry's landscape that comprises of five different fields of rare disease genetics, cancer genomics, perinatal genetics, pharmacogenomics, and lifestyle/chronic disorders and health state. Discuss how we are tackling at the goals of 'genomics for all' and 'health improvement over the entire population', and while doing that learn the basic genetic concepts of single variant-single phenotype association study. This chapter also discusses Mendelian laws of genetics and linkage disequillibrium, and also talk about the statistical tests commonly used in evidence-control group based association studies: **Fisher's exact test**, **Chi-squared test**, **Cochran-Armitage Trend Test**, **Hardy-Weinberg Equilibrium Test**.
+
+# 1. Introduction
+
+It was 1953 that Watson and Crick discovered the double helical structure of DNA molecules. It was a triumph in Mendelian genetics in that there indeed was the mediating substance that carries inherited information from parents to offspring. From then on, in 2003, 50 years from Watson and Crick's discovery, human genome project announced that they have decoded ~3 billion bases in human genome. Although there have been rosy speculations and expectations that now humanity may conquer all diseases, but that was not the 
+
+The genomic data analysis industry has expanded ever since then. The value chain goes like this: (1) retrieving relevant samples, (2) sequencing, (3) data analysis, (4) data interpretation, (5) translational and clinical application. Most of the high-value in the initial phase of the industry growth focused on sequencing technology as you can see with the case of Illumina. But as the industry matures, that is to change as well, and steps (3), (4), (5) are bound to create more values. It is incremental as the step goes further back because sampling and sequencing tech themselves are walking the path of being reduced. As of now, data analysis is expanding rapidly (possibly at its prime time?) and clinical applications are at their infantile phase. Genomic data analysis is the toughest bottleneck for now and genomic data interpretation field will create more and more high-added values. Genomic data interpretation pertains to clinical analysis reports, linking genomic data with health and medical records for interpretation, and interpretation of customized and personalized genomic data and providing such product to the clients.
+
+<center>![](genomics_value_chain.PNG)</center>
+<center>*From ["Genomics in the UK: An Industry Study for the Office of Life Sciences, 2015"](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/464088/BIS-15-543-genomics-in-the-UK.pdf){target="blank"}*</center>
+
+For the time being, genomic data analysis and interpretation are being attempted in problems like rare diseases, cancer, and perinatal problem (perinatal (pertaining to pregnancy to 7 days into birth) diagnostics). The area of application is being expanded and is soon expected to cover the entire medical fields. However, such prospect still has its limitations to overcome, as well.
+
+(1) Clinical relevance of genomic data analysis results in making clinical decisions is still pretty low for most of the disease and health-related fields.
+
+(2) Our understanding of complex diseases, and genomics of healthy people (normal) are still at its infantile stages. 
+
+Current interests in genomic data analysis industry can be classified into five broad categories:
+
+1. rare diseases
+
+2. cancer
+
+3. perinatal genetics
+
+4. pharmacogenomics (which drugs to use for individuals with specific genomic or expression profile)
+
+5. "lifestyle", chronical diseases and well-being
+
+Precision medicine that aims at personalized medicine for everyone is positioned in the upper-right corner, marked with a star. That's the holy grail and diamond-standard of the industry, but the reality is a linear inverse function like in the picture below.
+
+Rare diseases are almost all dictated by the genotype itself. Genotype determines phenotype. However, applicable target population is less than 1% even if you gather all sort of rare diseases together. This means market size is rather small for it to be a profitable and thriving industry.
+
+On the other hand, products that target at well-being and general population like the disease risk prediction DTC (direct to consumer) provided by 23andMe covers most of the population, but its clinical and medical relevance is darn low. Well-being market exists in the bottomright corner, and rare diseases at the upperleft corner.
+
+<center>![](market_map.PNG)</center>
+
+Simplistic approach to increase the medical credibility of well-being region (bottomleft corner) to move upward towards deterministic level of rare diseases or expand the medical relevance of genomic data analysis in rare diseases (upperleft corner) are both not feasible. The latter pertains to complex traits that involve hundreds~even thousand genes interacting with each other in a rather web-like fashion and also environmental interventions. The former pertains to only the rarest cases of diseases called "Mendelian diseases" that are determined by only one gene.
+
+So we need a newer genomics. Our understanding of complex diseases are still at the basic level and simplistic approach to increase observed sample number (N) and observation period (time) won't do justice to solve the problem. DNA polymorphic loci comprise of about 30 million bases, which make up about 1% of the total nucleotides present in the genome. DNA has the potential to create $2^{30000000}$ combinations of polymorphisms. We can consider only a hundred thousand genes of coding region, or only the most important 10000 loci. This still results in about $2^{10000}$ combinations possible. It's astronomical number. Or rather, it's **genomical** number! It's not enough just to analyze the entire population present on earth to get all possibilities of combinations. So most of the potential polymorphisms have not yet been discovered. Unlike the deterministic way of how only a handful number of genes' genotype determine rare diseases, complex disease phenotypes are more of *"emergent"* properties that arise from the interaction among many genes and their corresponding polymorphisms.
+
+Also, there's the question of whether the scope of current genomic data analysis limited in rare diseases, cancers, prenatal testing should really be the focus and essence of genomics problem. Cancer genetics discusses somatic mutations that are instable in its nature and ever-changing, totally different from germline mutations that cause complex trait diseases and remain identical throughout lifespan. They follow different principles. Rare disease and perinatal diagnostics and analyses are closer to traditional genetics rather than modern genomics. We do utilize the NGS technology in obtaining data, but the actual interpretation process still remains at the level of classical genetics where one analyzes individual genes and variants. We're still living in the paradigm of Mendelian genetics and molecular biology where individual genes determine phenotypes. So it may be more fitting to call it "genetics using genomics technology" rather than genomics itself. For example, perinatal diagnostics problem approaches non-invasive, cutting edge NGS technology in obtaining the sequencing and variant data, but the underlying principle is still basically cytogenetics analysis.
+
+So we need better overall systematic understanding of "omics" of emergent properties in the truly genomic problems like complex diseases and various health states.
+
+Pharmacogenomics takes a very special place in the field of genomics:
+
+1. The entire population may be addressed as the sample population, since almost everyone takes some form of medication in their lifetime.
+
+2. Metabolism and effectiveness of drugs are determined by ADME (absorption, distribution, metabolism, and excretion), which are in turn regulated by individual genotypes and phenotypes that pertain to the individual differences in ADME and also pharmacodynamics. Pharmacodynamics refers to the regulation of target protein function through mechanisms that modify the molecular function of transporters, channels, enzymes and target proteins. 
+
+So pharmacogenomics is a really unique and optimal genomics research model that consists of both enough number of samples and specific genotype-phenotype relationship. Also, it is obvious that the individual differences in drug response and sensitivity do not rely on single gene variants but is a process determined systematically through numerous interactions among many genes that are related to pharmacokinetics and pharmacodynamics. Additionally, the expression of a phenotype solely presents itself only when drugs are administered. So the author thinks pharmacogenomics will develop into a representative research field of germline-based genomics to enhance our understanding of the interaction between environment ("drugs") and genes because it's got much less complexity compared to well-being research in terms of genomics approach, and also scientific reproducibility is guaranteed above certain levels.
+
+# 2. Understanding the Genetics of Rare Genetic Disorders and Complex Trait Diseases
+
+- Darwin: theorized the concept of evolution and inheritance in organisms. Couldn't explain the exact mechanisms of inheritance from one generation to the next.
+
+- Mendel: Discovered three law of inheritance through experiments
+  - law of segregation
+  - law of independent assortment
+  - law of dominance
+  
+- Francis Galton: believed that Darwin's idea could be explained only through quantitative analyses of diversity in genetic variants. = This is the idea of biometrics and biometrician began hereon, as opposed to the Mendelian school of thought.
+
+![](quantgen.png)
+
+Left shows standard distribution of common traits consisting of multiple common variants. Right exhibits Mendelian school of thought. These came to be one eventually. Pearson and Fischer are statisticians and geneticists active at the time, as disciples of Francis Galton. Ronald Fischer attempted to integrate Galton's regression model (Galton discovered regression and correlation) and various quantitative analytical methods with Mendelian laws of inheritance, which established the genetics of quantitative traits. Quantitative genetics goes a step further from discrete and categorical (seemingly qualitative) traits and explores into the depths of continuous quantitative traits like people's height. Usually pertaining to multi-variable analysis. If uni-variate analysis is applied to qualitative trait, quantitative traits involve multi-variate analysis.
+
+70s saw the advent of Sanger sequencing and linkage analysis for pedigree analysis. This led to successful identification of disease genes. Law of inheritance includes the three Mendelian laws described previously plus law of linkage (연관법칙). Correlation between genotype and phenotype is the oldest research topic in genetics. Association analysis, which assumes independent assortment, and linkage analysis, which assumes law of linkage, are key to understanding genotype and phenotype relationship. 
+
+NGS, however, made us realize that there are too many genotypes to consider and the variance among individuals and races are bigger than expected. Complex diseases like hypertension and diabetes mellitus are just beginning to step off. The amount of data generated by NGS calls for a trends of genomics that transcends traditional genetics. In this chapter we are acquainted with the basic concepts required for genomic analysis of rare genetic disorders and common complex diseases while discussing novel interpretations of conventional notions and improvement thereof.
+
+## 2-1. Single Nucleotide Variant
+
+Somatic mutation in a nucleotide (base) is point mutation. Germline variations in single nucleotide is called single nucleotide variant (SNV) and among them rare ones are called rare variants. If such variant is observed in over 1% of the population, it can account for the individual to individual differences in traits regardless of disease process, and these are called SNPs (single nucleotide polymorphism). This threshold is lowered to 0.5% as variants are found in over 1% of the bases, unlike what the researchers thought in the beginning. Nowadays, the term "SNV" is preferred over point mutation or polymorphisms as a more inclusive and neutral terminology. If the variant occurs over 0.5%, it's called common variant, others that occur less frequently are called rare variants. Variants that are not inherited from parents but by de novo mutation in germline DNA is called private variant, sometimes.
+
+## 2-2. Haplotype
+
+There are 46 chromosomes or 23 pairs of chromosomes in humans. This sort of genome with two sets of same things (similar) is called a diploid genome. In fact there are more than diploids in nature. The sets of chromosomes a cell possesses is called ploidy, and humans are diploid organisms. It's impossible to have half of a complete set of chromosomes. Haploid means one set of chromosomes that a gamete possesses. Since human zygotes are diploid, haploid of human cells is a monoploid.
+
+Haploid + genotype = haplotype
+
+Haplotype means the combination of alleles linked in a same chromosome. Next figure shows haplotypes C1 and C2, as determined by SNP1 and SNP2. ![](haplotype_phasing.PNG)
+
+Haplotype phasing by SNP chip is rather difficult.
+
+Sequencing is better for haplotype phasing.
+
+Current NGS tech performs sequencing with short reads with lengths around 100~300 bases. So a big haplotype estimation is still difficult. Haplotype phasing is why we need long read sequencing like PacBio's SMRT or nanopore sequencing. Haplotype's statistical genetic meaning is a set of SNPs on the same chromosome. We call SNP set that are strongly linked together as haplotype block, and these can be used for calling the correct haplotype even without sequencing the entire genome.
+
+## 2-3. Linkage Disequilibrium (LD)
+
+Most hardships during genomic analysis comes from the fact that genes or loci are linked in sequential order. Therefore, the individual genes on a chromosome are not independent at all, and are passed down by inheritance. Especially during meiosis, chromosomal crossover divides the genes on a chromosome into different chromosomes as well. however, if genes are closer together, they are more likely to passed down to descendants. The measurement of this is called the genetic linkage. Crossover also does not occur randomly. Also, crossover hotspots are irregularly distributed throughout genome. Therefore it is rather difficult to apply independent assortment assumption to statistical analysis of genes and loci that are linked with irregular distribution and linkage probability.
+
+LD (linkage disequilibrium) means that haplotype frequency between loci is different from the value predicted from the allele frequency of each. That is, the corresponding two or more loci are linked together. It is commonly known that African generation number is greater than other race so that less LD regions exist in African race. When recombination occurs, the LD between the two SNPs are broken and they are in linkage equilibrium, becoming non-LD. non-LD means that two loci occur at random chance to each other.
+
+![](ld.PNG)
+
+## 2-4. Tag SNP
+
+If LD is strong among variants, one can infer the presence of the rest of the variants from the existence of one variant and thus determine the haplotype. A specific allele that can be used as a proxy for a certain haplotype or presence of other variants is called tag SNP. Figure below shows an example of calling 4 different haplotypes from 6 tag SNPs. These four haplotypes were enough to describe the 90% of the entire population's haplotypes. The resulting SNPs from association studies are tag SNPs in a lot of cases.
+
+![](tag_snp.PNG)
+
+Genetics research is about locating the causal genetic variation. However, it's rather difficult to explore the entire chromosomal DNA for such locus. Therefore we use tag SNPs that are directly associated with unobserved causal locus that results in the disease phenotype. Therefore, the typed marker locus can be said to be in an indirect association with disease phenotype.
+
+## 2-5. Hardy-Weinberg Equilibrium (HWE)
+
+Hardy and Weinberg each came up with the principle that describes the equilibrium of a population's gene pool independently in 1908. This principle is called the Hardy-Weinberg principle. If a population group has no mutation, and random mating occurs, and there's no influx of genes from outgroup, the genotype and allele frequency are retained as an equilibrium over time.
+
+$$f(A)=p, f(a)=q$$
+
+$$f(AA)=p^2, f(Aa)=2pq, f(aa)=q^2$$
+
+
+$$(p+q)^2=p^2+2pq+q^2$$
+
+HWE test is used in testing for population stratification, where a systematic difference in allele frequencies between subpopulations in a population exists possibly due to different ancestry...^[[https://en.wikipedia.org/wiki/Population_structure_(genetics)](https://en.wikipedia.org/wiki/Population_structure_(genetics)){target="_blank"}, [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6007879/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6007879/){target="_blank"}] and also in testing for non-random mating. 
+
+<center>![](population_stratification.jpg)</center>
+
+If a population's allele frequency and disease prevalence do not follow HWE, it means there is violation of the random-mating assumption. It may naturally occur in nature by sexual selection. With a simple Chi-squared testing, you can determine whether HWE is violated or not. For example, HWE violations occur in (1) a group extracted from one ancestry/household, (2) inbreeding, (3) assortive mating (mating between individuals that have similar traits.), (4) mixed group of different races, (5) data error. (1)~(3) are states where you cannot just assume random mating. Errors that occur in a well-compolsed population group usually consist of data errors. (4)'s population stratification (population structure) problem is very complicated and is a problem that needs to be addressed and solved in modern GWAS research. Also, sex chromosomes exhibit different inheritance pattern from autosomal chromosomes, therefore we need analysis methods that reflect such differences.
+
+<center>![](hardy_weinberg.PNG)</center>
+<center>*Hardy-Weinberg Equilibrium in the Locus with Two Alleles*</center>
+
+# 3. New Paradigms in Genomics Research
+
+Obama administration started 'precision medicine initiative' in 2015 with 215 million dollars of Federal budget. Short-term goals were prevention and better treatment by improvements in cancer genomics. Its long-term goals were about forming pan-national scientists' network to enhance understanding of diseases and health while establishing an integrative knowledge database through conducting researches on the gathered data of a million (1,000,000) American cohort. This was later renamed as "All of Us" in 2016. All of Us project is accompanied by 100 partners and this includes Google's Moonshot Program of a Google biosciences start-up called Verily Life Sciences. Yearly budget has increased from 130 million dollars in 2016 to 230 mil. in 2017 to 290 mil. in 2018.
+
+UK is also working its arse off. In 2012, then PM David Cameron signed the paper that will conduct nation-wide 100000 British genomics project called Genomics England. Whole Genome Sequencing of the hundred thousand samples was completed in 2018. Cooperation with external organizations and individuals by publicly offering the data officialized in August, 2019. On the other hand, UK BioBank publicly released all of its WES data and clinical data in March, 2019.
+
+All this trend began back in 2007 with MyCode initiative started by Geisinger Health System, which is a Pennsylvania and New Jersey-based local heath service system. It began frm a biobank in 2007, but further developed into DiscovEHR project that integrated Electronic Health Records that includes long-time tracing data and genomics data by cooperation with Regeneron Pharmaceuticals. About 200,000 patients have provided their genetic samples up to 2018. DiscovEHR aims to gather 250,000 patients' data and so far WES of 180,000 patients have been completed. In the midst of WES data, they have identified 4,028,206 unique SNV InDels with about 98% of which had less than 1% of allele frequency, and over 176,000 variants are loss of function variants. It's quite comparable to 1000 genomes project where its variants with frequency less than 1% comprised of about 81.2% of total (68850471/84739838).
+
+<center>![](DiscovEHR_variants.PNG)</center>
+
+NGS has changed the paradigm of genetics research. Traditional genetics' cohort researches focused on gene-environment interactions and traced control group and experimental group (exposed to a certain environment) over a long period of time (long-term tracing). But nowadays, one can resconstruct case-control study's environmental exposure using the fact that germline DNAs do not change and high-throughput research cost drops drastically with NGS, and you can use long-term tracing data. Electronical phenotypes is also another thing.
+
+![](reconstruction_of_environmental_exposure.PNG)
+![](retrospective_and_electronic_phenotyping.PNG)
+
+# 4. Single Nucleotide Variant Association Study and Statistical Genetics Models
+
+![](linkage_and_association_studies.PNG)
+
+GWAS (Genome Wide Association Study) is a variant-phenotype association study of single nucleotide variant's additive model. It performs association analysis between individual variant and individual phenotype by logistic regression of linear or binary phenotype representation of a continuous phenotype. It tests over hundred thousands of loci and this may result in many type 1 errors (false positives). Therefore we need multiple hypothesis correction like Bonferroni correction, Benjamini and Hochberg false discovery rate. Also SNP chip's own experimental artifacts sometimes bias the data systematically, so therefore Mendelian law that serves as the true model to reduce false positives is very important. But GWAS over a large population rarely contains an accurate pedigree. Linkage analysis that require a pedigree is usually about a rare disease that is caused by one or few genes with high penetrance. This sort of analysis is optimal when it follows Mendelian inheritance. However, in the case of common, complex traits where many genes are involved and gene-environment interactions also need to be put into consideration are usually done with association study.
+
+Modern GWAS's assume significance level of 5% and about million times of multiple hypothesis testing. In this case, significance threshold is $5 \times 10^{-8}$. Single nucleotide variant association study has weaker statistical power compared to common variants if their effect sizes are the same. For example, if MAF(minor allele frequency)= 0.1, 0.01, 0.001 and it is assumed that odds-ratio is 1.4 for the particular variant, we are required 6400, 54000, 540000 number of samples respectively in order to achieve 80% statistical power. Because rare variant numbers are a lot more than common variants, there needs to be a significance level correction about multiple hypothesis testing. In summary, rare variant's single nucleotide association analysis shows good results when there are enough number of samples, if the effect size is very large, or the rare variant has fairly high frequency. Heterogeneity within a population is still a pretty tough problem to solve, and needs to be approached delicately with techniques like genomic control analysis.
+
+In this chapter, we learn different statistical models for genetics of single variant association studies.
+
+
+
+Despite such limitations, rare variant's single nucleotide variant association study is still useful, and it can be further utilized with Q-Q plot, genomic control analysis, Manhattan graph, etc. to do quality evaluation, batch effect control, population structure analysis, etc. PRS (Polygenic Risk Score) shows fairly predictive power about a quantitative complex trait without an accurate pedigree.
+
+## 4-1. Fisher's Exact Test
+
+```{r}
+df <- data.frame(allele=c("Case", "Control", "Total"), A=c(10, 66, 76), G=c(12, 26, 38), total=c(22, 92, 114))
+```
+
+```{r}
+df
+```
+```{r}
+row.names(df) <- c("Case", "Control", "Total")
+```
+
+```{r}
+df
+```
+
+| Allele | A | G | Total |
+|----------|----|-------|-------|
+| Case | 10 | 12 | 22 |
+| Control | 66 | 26 | 92 |
+| Total | 76 | 38 | 114 |
+
+```{r}
+# Case = (12, 10), Control = (26, 66)
+fisher.test(matrix(c(12, 10, 26, 66), nrow=2))
+```
+
+| Dominant | AA | AG+GG | Total |
+|----------|----|-------|-------|
+| Case | 5 | 6 | 11 |
+| Control | 23 | 23 | 46 |
+| Total | 28 | 29 | 57 |
+
+| Recessive | AA+AG | GG | Total |
+|----------|----|-------|-------|
+| Case | 5 | 6 | 11 |
+| Control | 43 | 3 | 46 |
+| Total | 48 | 9 | 57 |
+
+```{r}
+fisher.test(matrix(c(6, 5, 23, 23), nrow=2))
+```
+
+```{r}
+fisher.test(matrix(c(6, 5, 3, 43), nrow=2))
+```
+
+## 4-2. Chi-squared test
+
+Pearson's chi-squared ($\chi^2$) test is also used frequently along with Fisher's exact test. Here, the contingency table's expected frequency must be at least 5. Code runs even when expected frequency is below 5, although with a warning. Chi-squared test works well with big sample numbers, but not when sample number is small. P-value is more conservative as well.
+
+```{r}
+chisq.test(matrix(c(6, 5, 3, 43), nrow=2))
+```
+
+```{r}
+chisq.test(matrix(c(6, 5, 23, 23), nrow=2))
+```
+
+## 4-3. Cochran-Armitage Trend test (CATT)
+
+One of the trend analysis. It tests alternative hypothesis ($H_1$) that there is a certain one-way trend of increasing success rate or decreasing success rate against the population.
+
+So you can test if there's a difference between experimental and control groups without making a 2 by 2 contingency table, but you can't get odds ratio like dominant model and recessive model. Required R package is `coin` and we utilize data provided by `SNPassoc`.]
+
+
+```{r, eval=FALSE, echo=FALSE}
+BiocManager::install("SNPassoc")
+BiocManager::install("coin")
+```
+
+
+```{r}
+# Data and Library Loading for Cochran-Armitage Trend Test
+library(SNPassoc)
+library(coin)
+data(SNPs)
+```
+
+The data contained in SNPassoc are SNPs-based Whole Genome Association Studies. This package is actually an analytical tool for SNPs and carries out most common analysis when performing whole genome association studies (GWAS). data included in `SNPs` from `SNPassoc` includes selected SNPs and other clinical covariates for cases and controls in a case-control study. Its data.frame contains the following columns:
+
+<br>
+<center>
+| | |
+|----|---|
+| id | identifier of each subject |
+| casco | case or control status: 0-control, 1-case |
+| sex | gender: Male and Female |
+| blood.pre | arterial blood pressure |
+| protein | protein levels |
+| snp10001 | SNP 1 |
+| snp10002 | SNP 2 |
+| ... | ... |
+| snp100036 | SNP 36 |
+</center>
+<br>
+
+<input type=button class=hideshow></input>
+```{r}
+SNPs[1:10, 1:10]
+```
+
+Make an SNP table class object with alleles separated by delimiter "/".
+
+```{r}
+# Generate an SNP table class object with alleles separated by delimiter "/"
+datSNP <- setupSNP(SNPs, 6:40, sep="")
+```
+
+
+<input type=button class=hideshow></input>
+```{r}
+datSNP
+```
+
+How to form a contingency Table.
+
+`xtabs` is a stats function included in the R base library. It creates a contingency table (optionally a sparse matrix) from cross-classifying factors, usually contained in a data frame, using a formula interface.
+
+<input type=button class=hideshow></input>
+```{r}
+# Generate a contingency table
+
+xtabs(~ casco + snp10001, data=datSNP)
+```
+If one were to interpret the above contingency table generation, it means create a cross-classifying contingency table based on casco and snp10001 columns (~ casco + snp10001) of the `data=datSNP`. Its usage is as follows:
+
+```
+xtabs(formula = ~., data = parent.frame(), subset, sparse = FALSE, na.action, addNA = FALSE, exclude = if(!addNA) c(NA,NaN), drop.unused.levels = FALSE)
+```
+
+`formula` is the formula object with the cross-clasifying variables separated by `+`. Interactions are not allowed.
+
+`data` is an optional matrix or data frame containing the variables in the formula `formula`.
+
+`subset` is an optional vector specifying a subset of observations to be used.
+
+`sparse` logical specifying if the result should be a `sparse` matrix, i.e., inheriting from `sparseMatrix`. Only works for two factors (since there are no higher-order sparse array classes yet).
+
+`na.action` is a function that indicates what should happen when the data contain NAs. If unspecified, and addNA is true, this is set to na.pass. When it is na.pass and formula has a left hand side (with counts), sum(\*, na.rm = TRUE) is used instead of sum(\*) for the counts.
+
+With this contingency table, you can see how many each category exists.
+
+Now test for independence between casco and snp10001.
+
+<input type=button class=hideshow></input>
+```{r}
+independence_test(casco~snp10001, data=datSNP, teststat="quadratic", scores=list(snp10001=c(0,1,2)))
+```
+
+Let's delve into the function `independence_test` included in the `coin` package. It provides a general independence test for two sets of variables measured on arbitrary scales. This function is based on the general framework for conditional inference procedures proposed by Strasser and Weber (1999). The salient parts of the Strasser-Weber framework are elucidated by Hothorn *et al*. (2006) and a thorough description of the software implementation is given by Hothorn *et al*. (2008).
+
+<input type=button class=hideshow></input>
+```{r}
+datSNP$snp10001
+```
+```{r}
+scores = list(snp10001=c(0,1,2))
+```
+
+```{r}
+scores
+```
+
+How to see a factor is ordered or nominal??
+```{r, eval=FALSE, echo=FALSE}
+min(datSNP$snp10001)
+```
+It doesn't work.
+
+<input type=button class=hideshow></input>
+```{r}
+head(datSNP$snp10001)
+```
+
+Since there is no ordering, R prints them without indicating any ordering.
+
+For ordinal variables, R indicates the order using `<` when printing the levels.
+
+So it is clear that snp10001 column implies an unordered (nominal) factor.
+
+Let's make an ordered factor just for an example.
+
+```{r}
+status <- c("Hi", "Hi", "Lo", "Hi", "Med", "Lo", "Med", "Med", "Med", "Hi")
+ordered.status <- factor(status, levels=c("Lo", "Med", "Hi"), ordered=TRUE)
+```
+
+```{r}
+ordered.status
+```
+
+For `ordered.status`, it works.
+
+```{r}
+min(ordered.status)
+```
+
+So I figured out the reason we use the argument `scores` in independence test is because `snp10001` is a nominal factor without any ordering and such nominal factors should be coerced into class `ordered` with specific scores for each nominal value.
+
+Refer to [this article](https://www.rdocumentation.org/packages/coin/versions/1.3-1/topics/IndependenceTest){target="_blank"} and look for `scores` for further information.
+
+## 4-4. Regression Analysis
+
+If the depending variables are continuous, like height, weight, or BMI - we  can't simply binarily segregate experimental and control groups. We use regression analysis in this case. Also, we designate risk scores as 0, 1, 2 respectively for normal, heterogeneous, and homozygous to assume that the phenotypic risk score increases according to additive model as the number of variant increases. And then we apply logistic regression analysis to this.
+
+<center>![](logistic_regression.png)</center>
+
+<input type=button class=hideshow></input>
+```{r}
+additive(datSNP$snp10001)
+```
+
+`additive` is a function contained in `SNPassoc` and it distinguish genotypes by arbitrary score.
+
+### Linear regression
+
+<input type=button class=hideshow></input>
+```{r}
+res <- lm(blood.pre ~ additive(snp10001), data=datSNP)
+summary(res)
+```
+
+### Logistic regression
+
+<input type=button class=hideshow></input>
+```{r}
+res <- glm(casco ~ additive(snp10001), data=datSNP, family=binomial(link='logit'))
+summary(res)
+```
+
+Take the coefficient from the result of logistic regression (`res`) and raise that to the power of `e` (`exp()`).
+
+<input type=button class=hideshow></input>
+```{r}
+exp(coef(res))
+```
+
+### Interpretation
+
+So linear regression is finding the linear equation in the form of,
+$y = a_1x_1 + a_2x_2 + .. + b$. The coefficient 0.10222 corresponds to snp10001's coefficient. So you can interpret it like this; "If you increase one variant, `blood.pre` is going to increase 0.10222 much." However, note that p-value is 0.413 and therefore this variable is not so significant in explaining blood pressure. That is, it cannot reject the null hypothesis ($H_0$) that blood pressure does not vary with the number of snp10001 variant.
+
+Logistic regression is about finding the coefficients that satisfy $log\frac{y}{1-y} = a_1x_1 + a_2x_2 + .. + b$ form of linear equation, so it's important to interpret the coefficient additive(snp10001)= -0.1447. This implies that when you add one variant, the log-odds ratio of the probability of becoming the case decreases with that the ratio of -0.1447. Therefore, if you calculate the exponential from the log-odds ratio,
+
+<input type=button class=hideshow></input>
+```{r}
+exp(coef(res))
+```
+
+<input type=button class=hideshow></input>
+```{r}
+exp(-0.1447)
+```
+<strike>It seems different. why's that?</strike>
+
+
+You can say that the probability of finding it as the case decreases by 0.8653 times.
+
+GWAS performs the odds ratio estimation and contingency table test on SNP genotype frequency difference between the experimental group and control group. (This means that the possible candidate of associated SNPs will statistically be manifested more in the experimental group). However, other than genotype you gotta also consider different physiological and environmental variables like the age, sex, etc. Regression model is a powerful way to correct for and take into consideration of various external variables, compared to contingency table testing.
+
+<input type=button class=hideshow></input>
+```{r}
+x <- seq(-3, 3, by=0.2)
+alpha = 1.1
+beta = 1.5
+y = exp(alpha + beta*x)/(1+exp(alpha + beta*x))
+plot(x, y, type="b")
+```
+
+## 4-4. Hardy-Weinberg Equilibrium (HWE) test
+
+You can do HWE testing with `SNPassoc` package as well. In HWE test, you assume biallelic (not multi-allelic == no more than alternative forms of a gene), and test for three genotypes that will be present on a locus if they follow the HWE distribution. You can set the p-value threshold from 0.001 to 0.00001 and filter for specific SNPs.
+
+First, load library `SNPassoc` and load data `SNPs`.
+
+<input type=button class=hideshow></input>
+```{r}
+library(SNPassoc)
+data(SNPs)
+pre_SNPs <- snp(SNPs$snp10005, sep="")
+summary(pre_SNPs) # summary of a factor results in frequency and percentage table of the factor categories
+```
+<input type=button class=hideshow></input>
+```{r}
+pre_SNPs
+```
+<input type=button class=hideshow></input>
+```{r}
+class(pre_SNPs)
+```
+The class of `pre_SNPs` is `snp` and `factor`.
+
+You can also plot `snp` object out, representing each genotype's frequency with height.
+
+<input type=button class=hideshow></input>
+```{r}
+plot(pre_SNPs, label="snp10005", col="red")
+```
+
+If you're HWE testing about many, many numbers of multiple SNP, use the function `tableHWE()`. If you put the threshold into `sig` variable in `print()`, you can mark the SNPs with p-value lower than that with `<-`.
+
+<input type=button class=hideshow></input>
+```{r}
+myData <- setupSNP(data=SNPs, colSNPs=6:40, sep="")
+res <- tableHWE(myData)
+print(res, sig=0.001)
+```
+
+<input type=button class=hideshow></input>
+```{r}
+myData$snp10003
+```
+
+
+All right. Let's interpret the above table. `<-` means that it is significantly different in HWE testing. Generally, significant SNPs are deleted in the post-analytical process. If variants are not discovered in samples (MAF = minor allele frequency), variant calling didn't go well (missingness > 0.02), HWE test's p-value is significant (HWE<0.001), these are filtered out by various filters and passed onto next steps of analysis. This is how you remove noises.
+
+For SNPs that have only one genotype, the test results come back as `-`. Also, you could divide the testing groups with a certain criterion (`strata` = the argument you pass on for stratification of the population) and test for that. Let's test for sex.
+
+You delete SNPs that show significance 
+
+<input type=button class=hideshow></input>
+```{r}
+res <- tableHWE(myData, strata=myData$sex)
+res
+```
+
+## 4-5. Manhattan graph
+
+GWAS analysis uses Manhattan graph to visualize the result of statistical analysis on numerous number of variants of numerous number of samples. Next example uses `qqman` library to print out the data contained in `gwasResults` as manhattan graph.
+
+[`qqman`](https://cran.r-project.org/web/packages/qqman/vignettes/qqman.html){target="_blank"} package includes functions for creating manhattan plots and q-q plots from GWAS results. Install `qqman`.
+
+
+```{r, eval=FALSE, echo=FALSE}
+BiocManager::install("qqman")
+```
+`qqman` package is included in CRAN repository. You don't have to use BiocManager to install it actually. But still, I managed to install it through BiocManager.
+
+So, before we go into the depths of this package, let's get things straight first. What's a q-q plot? Q-Q plot (also called Quantile-Quantile plot) is a plot that represents a probability distribution with quantiles. It has quantiles (cutpoints) that group each section of distribution from top to bottom. 
+
+You can see that if distribution is not the same, quantile-quantile plot is going to deviate from $y=x$ line.
+
+<center>![](not_same_distribution.png)</center>
+
+You can also see here that if distribution is the same, quantile-quantile plot lies on the straight $y=x$ line.
+
+<center>![](same_distribution.png)</center>
+<br>
+
+[This blog article](https://blog.naver.com/sw4r/221026102874){target="_blank"} is where I took the picture from, and it nicely explains about qq-plots.
+
+The `gwasResults` data.frame included with the package has simulated results for 16,470 SNPs on 22 chromosomes. Take a look at the data:
+
+<input type=button class=hideshow></input>
+```{r}
+library(qqman)
+head(gwasResults)
+```
+The data consists of SNP ID (rsID), the chromosome, and variant position, and p-value of statistical analysis result.
+Manhattan graph's x-axis lists variants on the basis of chromosome order and locus within the chromosomes, and the vertical axis prints `-log` value of p-value. Generally the threshold p-value for GWAS are $5 \times 10^{-8}$ and $10^{-5}$.
+
+Select for the locus where p-value is less than $5 \times 10^{-8}$.
+
+```{r}
+sig_loci_gwas <- gwasResults[gwasResults$P<(5*10**(-8)),]
+sig_loci_gwas
+```
+
+```{r}
+sig_loci_gwas[order(sig_loci_gwas$SNP), ]
+```
+
+You can see that the significantly varied SNPs exist in chromosome 3 between variant positions rs3040 ~ rs3060.
+
+```{r}
+manhattan(gwasResults, main="Manhattan Plot", cex = 0.5, cex.axis=0.8, col = c("blue4", "orange3"))
+```
+
+You can also print out the genotype, stats about each alleles, and HWE test results as bar plots.
+
+
+
+
+
+
+<script>
+$( "input.hideshow" ).each( function ( index, button ) {
+button.value = 'Hide Output';
+$( button ).click( function () {
+var target = this.nextSibling ? this : this.parentNode;
+target = target.nextSibling.nextSibling.nextSibling.nextSibling;
+if ( target.style.display == 'block' || target.style.display == '' ) {
+target.style.display = 'none';
+this.value = 'Show Output';
+} else {
+target.style.display = 'block';
+this.value = 'Hide Output';
+}
+} );
+} );
+</script>
